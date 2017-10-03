@@ -1,0 +1,24 @@
+{
+  "name": "psd2sprite",
+  "version": "0.0.1",
+  "description": "Convert PSD to SpriteSheet",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zprodev/psd2sprite.git"
+  },
+  "author": "zprodev <zproject.develop@gmail.com> (https://github.com/zprodev)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zprodev/psd2sprite/issues"
+  },
+  "homepage": "https://github.com/zprodev/psd2sprite#readme",
+  "devDependencies": {
+    "psd": "^3.2.0",
+    "rmdir-sync": "^1.0.1",
+    "spritesmith": "^3.1.1"
+  }
+}
