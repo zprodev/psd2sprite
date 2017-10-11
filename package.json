@@ -1,6 +1,6 @@
 {
   "name": "psd2sprite",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Convert PSD to SpriteSheet",
   "main": "index.js",
   "scripts": {
@@ -18,6 +18,16 @@
     "url": "https://github.com/zprodev/psd2sprite/issues"
   },
   "homepage": "https://github.com/zprodev/psd2sprite#readme",
+  "keywords": [
+    "psd",
+    "layers",
+    "layout",
+    "parse",
+    "jsx",
+    "json",
+    "png",
+    "sprite"
+  ],
   "devDependencies": {
     "rimraf": "^2.6.2",
     "eslint": "^4.8.0",
