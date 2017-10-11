@@ -18,7 +18,7 @@
   "homepage": "https://github.com/zprodev/psd2sprite#readme",
   "devDependencies": {
     "psd": "^3.2.0",
-    "rmdir-sync": "^1.0.1",
+    "rimraf": "^2.6.2",
     "spritesmith": "^3.1.1"
   }
 }

@@ -1,5 +1,5 @@
 let fs = require('fs');
-let rmdirSync = require('rmdir-sync');
+let rimraf = require('rimraf');
 let path = require("path");
 let psd = require("psd");
 let Spritesmith = require('spritesmith');
@@ -11,7 +11,7 @@ function psd2sprite(psdFile) {
   // initialize output directory.
   let outDirPath = path.resolve("output");
   let outImgDirPath = path.resolve("output/img");
-  rmdirSync(outDirPath);
+  rimraf.sync(outDirPath);
   if(!fs.existsSync(outDirPath)){
     fs.mkdirSync(outDirPath);
   }
