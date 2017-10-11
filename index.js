@@ -4,21 +4,26 @@ const path = require("path");
 const psd = require("psd");
 const Spritesmith = require("spritesmith");
 
-function psd2sprite(psdFile) {
+function psd2sprite(psdFile, outDir) {
   const psdFilePath = path.resolve(psdFile);
   const psdFileName = path.basename(psdFilePath, path.extname(psdFilePath));
 
   // initialize output directory.
-  const outDirPath = path.resolve("output");
-  const outImgDirPath = path.resolve("output/img");
-  rimraf.sync(outDirPath);
+  let outDirPath;
+  if (outDir) {
+    outDirPath = path.resolve(outDir);
+  } else {
+    outDirPath = path.dirname(psdFilePath);
+  }
+  const outImgDirPath = path.join(outDirPath, "tmp");
   if (!fs.existsSync(outDirPath)) {
     fs.mkdirSync(outDirPath);
   }
-  if (!fs.existsSync(outImgDirPath)) {
-    fs.mkdirSync(outImgDirPath);
+  if (fs.existsSync(outImgDirPath)) {
+    rimraf.sync(outImgDirPath);
   }
-
+  fs.mkdirSync(outImgDirPath);
+  
   // get root node.
   const psdData = psd.fromFile(psdFilePath);
   psdData.parse();
@@ -71,10 +76,10 @@ function psd2sprite(psdFile) {
         queueNodesStructure.push(structure);
         continue queueLoop;
       } else {
-        let saveName = (nodesName + node.name).replace( "/" , "_" ).replace("." , "_") + ".png";
-        sprites.push(outImgDirPath + "/" + saveName);
+        let saveName = nodesName + node.name + ".png";
+        sprites.push(path.join(outImgDirPath, saveName));
         pngOutputQueueCount++;
-        node.layer.image.saveAsPng( outImgDirPath + "/" + saveName).then(() => {
+        node.layer.image.saveAsPng(path.join(outImgDirPath, saveName)).then(() => {
           pngOutputQueueCount--;
           if (!isRunning && pngOutputQueueCount <= 0) {
             makeSprite(sprites, outDirPath, psdFileName);
@@ -99,14 +104,14 @@ function makeSprite(sprites, dirPath, fileName) {
     if (err) throw err;
    
     // Output the SpritePng
-    fs.writeFileSync(dirPath + "/" + fileName + "_sprite.png", result.image);
+    fs.writeFileSync(path.join(dirPath, fileName + "_sprite.png"), result.image);
     // Output the SpriteJson
     let fileNameCoordinates = {};
     Object.keys(result.coordinates).forEach(function (key) {
       fileNameCoordinates[path.basename(key)] = result.coordinates[key];
     });
-    fs.writeFileSync(dirPath + "/" + fileName + "_sprite.json", JSON.stringify(fileNameCoordinates));
+    fs.writeFileSync(path.join(dirPath, fileName + "_sprite.json"), JSON.stringify(fileNameCoordinates));
   });
 }
 
-psd2sprite(process.argv[2]);
+module.exports = psd2sprite;
