@@ -28,10 +28,12 @@
     "png",
     "sprite"
   ],
-  "devDependencies": {
+  "dependencies": {
     "rimraf": "^2.6.2",
-    "eslint": "^4.8.0",
     "psd": "^3.2.0",
     "spritesmith": "^3.1.1"
+  },
+  "devDependencies": {
+    "eslint": "^4.8.0"
   }
 }
