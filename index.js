@@ -1,64 +1,64 @@
-let fs = require('fs');
-let rimraf = require('rimraf');
-let path = require("path");
-let psd = require("psd");
-let Spritesmith = require('spritesmith');
+const fs = require("fs");
+const rimraf = require("rimraf");
+const path = require("path");
+const psd = require("psd");
+const Spritesmith = require("spritesmith");
 
 function psd2sprite(psdFile) {
-  let psdFilePath = path.resolve(psdFile);
-  let psdFileName = path.basename(psdFilePath, path.extname(psdFilePath));
+  const psdFilePath = path.resolve(psdFile);
+  const psdFileName = path.basename(psdFilePath, path.extname(psdFilePath));
 
   // initialize output directory.
-  let outDirPath = path.resolve("output");
-  let outImgDirPath = path.resolve("output/img");
+  const outDirPath = path.resolve("output");
+  const outImgDirPath = path.resolve("output/img");
   rimraf.sync(outDirPath);
-  if(!fs.existsSync(outDirPath)){
+  if (!fs.existsSync(outDirPath)) {
     fs.mkdirSync(outDirPath);
   }
-  if(!fs.existsSync(outImgDirPath)){
+  if (!fs.existsSync(outImgDirPath)) {
     fs.mkdirSync(outImgDirPath);
   }
 
   // get root node.
-  let psdData = psd.fromFile(psdFilePath);
+  const psdData = psd.fromFile(psdFilePath);
   psdData.parse();
-  let rootNode = psdData.tree();
+  const rootNode = psdData.tree();
 
-  let queueNodes = [];
-  let queueNodesIndex = [];
-  let queueNodesName = [];
-  let queueNodesStructure = [];
+  const queueNodes = [];
+  const queueNodesIndex = [];
+  const queueNodesName = [];
+  const queueNodesStructure = [];
 
   queueNodes.push(rootNode._children);
   queueNodesIndex.push(0);
   queueNodesName.push(undefined);
-  let psdStructure = {
+  const psdStructure = {
     "children" : []
   };
   queueNodesStructure.push(psdStructure);
 
-  let sprites = [];
+  const sprites = [];
   let pngOutputQueueCount = 0;
   let isRunning = true;
   
-  queueLoop: while(0 < queueNodes.length){
+  queueLoop: while (0 < queueNodes.length) {
     let queueIndex = queueNodes.length - 1;
     let nodes = queueNodes[queueIndex];
     let nodesIndex = queueNodesIndex[queueIndex];
     let nodesName = queueNodesName[queueIndex];
     let nodesStructure = queueNodesStructure[queueIndex];
 
-    if(nodesName === undefined){
+    if (nodesName === undefined) {
       nodesName = "";
-    }else{
+    } else {
       nodesName += "_";
     }
   
-    nodeLoop: while(nodesIndex < nodes.length){
+    while (nodesIndex < nodes.length) {
       let node = nodes[nodesIndex];
       nodesIndex++;
-      if(node.layer.visible === false) continue;
-      if(node.type === "group"){
+      if (node.layer.visible === false) continue;
+      if (node.type === "group") {
         queueNodes.push(node._children);
         queueNodesIndex[queueIndex] = nodesIndex;
         queueNodesIndex.push(0);
@@ -70,13 +70,13 @@ function psd2sprite(psdFile) {
         nodesStructure.children.push(structure);
         queueNodesStructure.push(structure);
         continue queueLoop;
-      }else{
+      } else {
         let saveName = (nodesName + node.name).replace( "/" , "_" ).replace("." , "_") + ".png";
         sprites.push(outImgDirPath + "/" + saveName);
         pngOutputQueueCount++;
         node.layer.image.saveAsPng( outImgDirPath + "/" + saveName).then(() => {
           pngOutputQueueCount--;
-          if(!isRunning && pngOutputQueueCount <= 0){
+          if (!isRunning && pngOutputQueueCount <= 0) {
             makeSprite(sprites, outDirPath, psdFileName);
           }
         });
@@ -91,7 +91,7 @@ function psd2sprite(psdFile) {
   isRunning = false;
 }
 
-function makeSprite(sprites, dirPath, fileName){
+function makeSprite(sprites, dirPath, fileName) {
   Spritesmith.run({
     src: sprites
   }, function handleResult (err, result) {
