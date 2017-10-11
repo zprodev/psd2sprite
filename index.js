@@ -1,8 +1,8 @@
-const fs = require("fs");
-const rimraf = require("rimraf");
-const path = require("path");
-const psd = require("psd");
-const Spritesmith = require("spritesmith");
+const fs = require('fs');
+const rimraf = require('rimraf');
+const path = require('path');
+const psd = require('psd');
+const Spritesmith = require('spritesmith');
 
 function psd2sprite(psdFile, outDir) {
   const psdFilePath = path.resolve(psdFile);
@@ -15,7 +15,7 @@ function psd2sprite(psdFile, outDir) {
   } else {
     outDirPath = path.dirname(psdFilePath);
   }
-  const outImgDirPath = path.join(outDirPath, "tmp");
+  const outImgDirPath = path.join(outDirPath, 'tmp');
   if (!fs.existsSync(outDirPath)) {
     fs.mkdirSync(outDirPath);
   }
@@ -38,7 +38,7 @@ function psd2sprite(psdFile, outDir) {
   queueNodesIndex.push(0);
   queueNodesName.push(undefined);
   const psdStructure = {
-    "children" : []
+    'children' : []
   };
   queueNodesStructure.push(psdStructure);
 
@@ -54,29 +54,29 @@ function psd2sprite(psdFile, outDir) {
     let nodesStructure = queueNodesStructure[queueIndex];
 
     if (nodesName === undefined) {
-      nodesName = "";
+      nodesName = '';
     } else {
-      nodesName += "_";
+      nodesName += '_';
     }
   
     while (nodesIndex < nodes.length) {
       let node = nodes[nodesIndex];
       nodesIndex++;
       if (node.layer.visible === false) continue;
-      if (node.type === "group") {
+      if (node.type === 'group') {
         queueNodes.push(node._children);
         queueNodesIndex[queueIndex] = nodesIndex;
         queueNodesIndex.push(0);
         queueNodesName.push(nodesName + node.name);
         let structure = {
-          "name" : node.name,
-          "children" : []
+          'name' : node.name,
+          'children' : []
         };
         nodesStructure.children.push(structure);
         queueNodesStructure.push(structure);
         continue queueLoop;
       } else {
-        let saveName = nodesName + node.name + ".png";
+        let saveName = nodesName + node.name + '.png';
         sprites.push(path.join(outImgDirPath, saveName));
         pngOutputQueueCount++;
         node.layer.image.saveAsPng(path.join(outImgDirPath, saveName)).then(() => {
@@ -104,13 +104,13 @@ function makeSprite(sprites, dirPath, fileName) {
     if (err) throw err;
    
     // Output the SpritePng
-    fs.writeFileSync(path.join(dirPath, fileName + "_sprite.png"), result.image);
+    fs.writeFileSync(path.join(dirPath, fileName + '_sprite.png'), result.image);
     // Output the SpriteJson
     let fileNameCoordinates = {};
     Object.keys(result.coordinates).forEach(function (key) {
       fileNameCoordinates[path.basename(key)] = result.coordinates[key];
     });
-    fs.writeFileSync(path.join(dirPath, fileName + "_sprite.json"), JSON.stringify(fileNameCoordinates));
+    fs.writeFileSync(path.join(dirPath, fileName + '_sprite.json'), JSON.stringify(fileNameCoordinates));
   });
 }
 
