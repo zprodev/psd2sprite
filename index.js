@@ -1,6 +1,6 @@
 const fs = require('fs');
-const rimraf = require('rimraf');
 const path = require('path');
+const rimraf = require('rimraf');
 const psd = require('psd');
 const Spritesmith = require('spritesmith');
 
@@ -15,7 +15,7 @@ function psd2sprite(psdFile, outDir) {
   } else {
     outDirPath = path.dirname(psdFilePath);
   }
-  const outImgDirPath = path.join(outDirPath, 'tmp');
+  const outImgDirPath = path.join(outDirPath, 'ss_tmp');
   if (!fs.existsSync(outDirPath)) {
     fs.mkdirSync(outDirPath);
   }
@@ -102,15 +102,48 @@ function makeSprite(sprites, dirPath, fileName) {
   }, function handleResult (err, result) {
     // If there was an error, throw it 
     if (err) throw err;
-   
+
     // Output the SpritePng
-    fs.writeFileSync(path.join(dirPath, fileName + '_sprite.png'), result.image);
+    let spritePngName = fileName + '_ss.png';
+    fs.writeFileSync(path.join(dirPath, spritePngName), result.image);
     // Output the SpriteJson
-    let fileNameCoordinates = {};
+    let frames = {};
     Object.keys(result.coordinates).forEach(function (key) {
-      fileNameCoordinates[path.basename(key)] = result.coordinates[key];
+      let coordinate = result.coordinates[key];
+      let frame = {};
+      frame.x = coordinate.x;
+      frame.y = coordinate.y;
+      frame.w = coordinate.width;
+      frame.h = coordinate.height;
+      let spriteSourceSize = {};
+      spriteSourceSize.x = 0;
+      spriteSourceSize.y = 0;
+      spriteSourceSize.w = coordinate.width;
+      spriteSourceSize.h = coordinate.height;
+      let sourceSize = {};
+      sourceSize.w = coordinate.width;
+      sourceSize.w = coordinate.height;
+      frames[fileName + '_' + path.basename(key)] = {
+        'frame': frame,
+        'rotated': false,
+        'trimmed': false,
+        'spriteSourceSize': spriteSourceSize,
+        'sourceSize': sourceSize,
+        'pivot': {'x':0.5,'y':0.5}
+      };
     });
-    fs.writeFileSync(path.join(dirPath, fileName + '_sprite.json'), JSON.stringify(fileNameCoordinates));
+    let outJsonObject = {};
+    outJsonObject.frames = frames;
+    outJsonObject.meta = {
+      'image': spritePngName,
+      'format': 'RGBA8888',
+      'size': {
+        'w':result.properties.width,
+        'h':result.properties.height
+      },
+      'scale': 1,
+    };
+    fs.writeFileSync(path.join(dirPath, fileName + '_ss.json'), JSON.stringify(outJsonObject));
   });
 }
 
