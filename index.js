@@ -122,7 +122,7 @@ function makeSprite(sprites, dirPath, fileName) {
       spriteSourceSize.h = coordinate.height;
       let sourceSize = {};
       sourceSize.w = coordinate.width;
-      sourceSize.w = coordinate.height;
+      sourceSize.h = coordinate.height;
       frames[fileName + '_' + path.basename(key)] = {
         'frame': frame,
         'rotated': false,
