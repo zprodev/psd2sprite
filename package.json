@@ -1,10 +1,10 @@
 {
   "name": "psd2sprite",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Convert PSD to SpriteSheet",
   "main": "index.js",
   "scripts": {
-    "test": "node ./test",
+    "test": "npm run lint && mocha",
     "lint": "eslint index.js && eslint ./test",
     "lint-fix": "eslint index.js --fix && eslint ./test --fix"
   },
@@ -34,6 +34,7 @@
     "spritesmith": "^3.1.1"
   },
   "devDependencies": {
-    "eslint": "^4.8.0"
+    "eslint": "^4.8.0",
+    "mocha": "^5.0.0"
   }
 }

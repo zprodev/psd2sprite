@@ -4,6 +4,11 @@ const rimraf = require('rimraf');
 const psd = require('psd');
 const Spritesmith = require('spritesmith');
 
+/**
+ * Convert PSD to SpriteSheet
+ * @param {string} psdFile Relative path or absolute path of PSD file
+ * @param {string} [outDir] Set this when outputting to a different directory from the PSD file
+ */
 function psd2sprite(psdFile, outDir) {
   const psdFilePath = path.resolve(psdFile);
   const psdFileName = path.basename(psdFilePath, path.extname(psdFilePath));
@@ -15,7 +20,7 @@ function psd2sprite(psdFile, outDir) {
   } else {
     outDirPath = path.dirname(psdFilePath);
   }
-  const outImgDirPath = path.join(outDirPath, 'ss_tmp');
+  const outImgDirPath = path.join(outDirPath, psdFileName + '_ss');
   if (!fs.existsSync(outDirPath)) {
     fs.mkdirSync(outDirPath);
   }
@@ -38,7 +43,7 @@ function psd2sprite(psdFile, outDir) {
   queueNodesIndex.push(0);
   queueNodesName.push(undefined);
   const psdStructure = {
-    'children' : []
+    'group' : []
   };
   queueNodesStructure.push(psdStructure);
 
@@ -47,11 +52,11 @@ function psd2sprite(psdFile, outDir) {
   let isRunning = true;
   
   queueLoop: while (0 < queueNodes.length) {
-    let queueIndex = queueNodes.length - 1;
-    let nodes = queueNodes[queueIndex];
+    const queueIndex = queueNodes.length - 1;
+    const nodes = queueNodes[queueIndex];
+    const nodesStructure = queueNodesStructure[queueIndex];
     let nodesIndex = queueNodesIndex[queueIndex];
     let nodesName = queueNodesName[queueIndex];
-    let nodesStructure = queueNodesStructure[queueIndex];
 
     if (nodesName === undefined) {
       nodesName = '';
@@ -60,7 +65,7 @@ function psd2sprite(psdFile, outDir) {
     }
   
     while (nodesIndex < nodes.length) {
-      let node = nodes[nodesIndex];
+      const node = nodes[nodesIndex];
       nodesIndex++;
       if (node.layer.visible === false) continue;
       if (node.type === 'group') {
@@ -68,15 +73,15 @@ function psd2sprite(psdFile, outDir) {
         queueNodesIndex[queueIndex] = nodesIndex;
         queueNodesIndex.push(0);
         queueNodesName.push(nodesName + node.name);
-        let structure = {
+        const structure = {
           'name' : node.name,
-          'children' : []
+          'group' : []
         };
-        nodesStructure.children.push(structure);
+        nodesStructure.group.push(structure);
         queueNodesStructure.push(structure);
         continue queueLoop;
       } else {
-        let saveName = nodesName + node.name + '.png';
+        const saveName = nodesName + node.name + '.png';
         sprites.push(path.join(outImgDirPath, saveName));
         pngOutputQueueCount++;
         node.layer.image.saveAsPng(path.join(outImgDirPath, saveName)).then(() => {
@@ -104,23 +109,23 @@ function makeSprite(sprites, dirPath, fileName) {
     if (err) throw err;
 
     // Output the SpritePng
-    let spritePngName = fileName + '_ss.png';
+    const spritePngName = fileName + '_ss.png';
     fs.writeFileSync(path.join(dirPath, spritePngName), result.image);
     // Output the SpriteJson
-    let frames = {};
+    const frames = {};
     Object.keys(result.coordinates).forEach(function (key) {
-      let coordinate = result.coordinates[key];
-      let frame = {};
+      const coordinate = result.coordinates[key];
+      const frame = {};
       frame.x = coordinate.x;
       frame.y = coordinate.y;
       frame.w = coordinate.width;
       frame.h = coordinate.height;
-      let spriteSourceSize = {};
+      const spriteSourceSize = {};
       spriteSourceSize.x = 0;
       spriteSourceSize.y = 0;
       spriteSourceSize.w = coordinate.width;
       spriteSourceSize.h = coordinate.height;
-      let sourceSize = {};
+      const sourceSize = {};
       sourceSize.w = coordinate.width;
       sourceSize.h = coordinate.height;
       frames[fileName + '_' + path.basename(key)] = {
@@ -132,7 +137,7 @@ function makeSprite(sprites, dirPath, fileName) {
         'pivot': {'x':0.5,'y':0.5}
       };
     });
-    let outJsonObject = {};
+    const outJsonObject = {};
     outJsonObject.frames = frames;
     outJsonObject.meta = {
       'image': spritePngName,

@@ -6,6 +6,8 @@
 
 Convert PSD to SpriteSheet.
 
+![01.png](https://raw.githubusercontent.com/zprodev/psd2sprite/master/docs/img/01.png)
+
 # Usage
 
 First, install this module in your project.
