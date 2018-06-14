@@ -1,6 +1,6 @@
 {
   "name": "psd2sprite",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Convert PSD to SpriteSheet",
   "main": "index.js",
   "scripts": {
